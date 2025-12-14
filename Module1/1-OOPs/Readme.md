@@ -1,4 +1,13 @@
-# Object Oriented Programming Important Features
+# Object Oriented Programming Essential Features (Overview)
+
+## Opening the Source code 
+
+1. Open Intellij
+2. Choose open option 
+3. Choose pom.xml from the Source\OopsBasics folder
+4. Open as project
+
+## Topics
 
 * Encapsulation
 * Overloading
@@ -51,39 +60,39 @@ class Account {
     }
 	
     public void showBalance() {
-	System.out.println("Current balance - " + balance);
+	    System.out.println("Current balance - " + balance);
     }
 }
 
-public class Main {
+public class EncapsulationEx1 {
 
     public static void main(String[] args) {
-	Account a1;
-		
-	a1 = new Account();
-		
-	a1.credit(2000);
-	a1.debit(1000);
-		
-	a1.showBalance();
-		
-	// balance is a private field in 
-	// the class Account, hence 
-	// directly referring to it through object
+        Account a1;
+            
+        a1 = new Account();
+            
+        a1.credit(2000);
+        a1.debit(1000);
+            
+        a1.showBalance();
+            
+        // balance is a private field in 
+        // the class Account, hence 
+        // directly referring to it through object
         // is invalid.
 
-	// a1.balance = -2000; // invalid 
+        // a1.balance = -2000; // invalid 
 
-	// debit operation validates the given amount
+        // debit operation validates the given amount
         // and rejects it if invalid. In the below case
         // because amount is not greater than 0 it won't
         // modify the balance.
 
         a1.debit(-2000);
+            
+        a1.showBalance();
 		
-	a1.showBalance();
-		
-    }
+   }
 
 }
 ```
@@ -99,6 +108,7 @@ Doesn't matter, we need to understand that all are members and any member which 
 E.g.
 
 ```java
+
 class Demo {
     private void f() {}
     public void g() {}
@@ -111,6 +121,7 @@ class Main {
       d.g(); // valid as it is public. 
     }
 }
+
 ```
 
 You can think of private member as something that is written for the internal purpose of the class and not for outsiders.
@@ -119,22 +130,26 @@ You can think of private member as something that is written for the internal pu
 ## Overloading -
 
 A method or a function is said to be overloaded when there are multiple defintions available for that function with different signatures.
-
 In the below example print method is said to be overloaded. i.e. there are three methods with name print. 
 
 You may get a question, when you call print which method gets invoked ?
 
-Although there are three methods, there is a change in the parameter. i.e. first one accepts integer argument, where as second method is written for double and third is written for String. 
+Although there are three methods, there is a change in the parameter. 
+i.e. first one accepts integer argument, where as second method is written for double and third is written for String. 
 
 Based on the type of value you pass the corresponding definition gets invoked.
 
 e.g. 
 
-print(10) calls the print method which accepts integer.
+``` java
 
-print(10.2) calls the print method which accepts double
+    print(10) calls the print method which accepts integer.
 
-print("abc") calls the print method that accepts String. 
+    print(10.2) calls the print method which accepts double
+
+    print("abc") calls the print method that accepts String. 
+
+```
 
 Example -
 
@@ -143,25 +158,25 @@ Example -
 class Sample {
 	
     public void print(int a) {
-	System.out.println("int - " + a);
+	    System.out.println("int - " + a);
     }
 	
     public void print(double a) {
-	System.out.println("double - " + a);
+	    System.out.println("double - " + a);
     }
 	
     public void print(String a) {
-	System.out.println("string - " + a);
+	    System.out.println("string - " + a);
     }
 	
 }
 
-public class Main {
+public class OverloadingEx1 {
     public static void main(String[] args) {
-	Sample obj = new Sample();
-	obj.print(10); 
-	obj.print(10.2);
-	obj.print("abc");
+        Sample obj = new Sample();
+        obj.print(10); 
+        obj.print(10.2);
+        obj.print("abc");
     }
 }
 ```
@@ -175,6 +190,7 @@ Technical Notes -
 e.g. INVALID - because parameters are of same type for both the methods i.e. (int, int), so when you say add(10, 20) it will match with both the methods and create ambiguity.
 
 ```java
+
 int add(int a, int b) { 
     return a + b;
 }
@@ -182,6 +198,7 @@ int add(int a, int b) {
 double add(int a, int b) { 
     return a + b;
 }
+
 ```
 e.g. VALID - because there is at least one change in the parameter types, first one has (int, int) and second one has (int, double). If you call add(10, 20) it matches with first definition where as add(10, 20.0) will match with the second definition.
 
@@ -194,6 +211,7 @@ int add(int a, int b) {
 double add(int a, double b) { 
     return a + b;
 }
+
 ```
 
 ## Inheritance - 
@@ -209,11 +227,11 @@ In the following example ScientificCalc extends BasicCalc, here BasicCalc is ref
 class BasicCalc {
 	
     public int add(int a, int b) {
-	return a + b;
+	    return a + b;
     }
 	
     public int sub(int a, int b) {
-	return a - b;
+	    return a - b;
     }
 }
 
@@ -222,32 +240,33 @@ class BasicCalc {
 class ScientificCalc extends BasicCalc {
 	
     public double sin(int deg) {
-	double rad = deg * 3.14159 / 180;
-	return Math.sin(rad);
+	    double rad = deg * 3.14159 / 180;
+	    return Math.sin(rad);
     }
 }
 
-public class Main {
+public class InheritanceEx1 {
 
     public static void main(String[] args) {
 		
-	BasicCalc bcalc1 = new BasicCalc();
-		
-	// Through BasicCalc reference 
-	// we can call add and sub methods.
+        BasicCalc bcalc1 = new BasicCalc();
+            
+        // Through BasicCalc reference 
+        // we can call add and sub methods.
 
-	System.out.println( bcalc1.add(10, 20));
-	System.out.println( bcalc1.sub(10, 20));
-		
-		
-	ScientificCalc sCalc1 = new ScientificCalc();
+        System.out.println( bcalc1.add(10, 20));
+        System.out.println( bcalc1.sub(10, 20));
+            
+            
+        ScientificCalc sCalc1 = new ScientificCalc();
 
-	// Through ScientificCalc reference
-	// we can call add, sub and sin methods.
+        // Through ScientificCalc reference
+        // we can call add, sub and sin methods.
 
-	System.out.println( sCalc1.add(10, 20));
-	System.out.println( sCalc1.sub(10, 20));
-	System.out.println( sCalc1.sin(90) );
+        System.out.println( sCalc1.add(10, 20));
+        System.out.println( sCalc1.sub(10, 20));
+        System.out.println( sCalc1.sin(90) );
+
     }
 }
 
@@ -262,9 +281,11 @@ If some argument or LHS of the assignment is expecting BasicCalc object, we can 
 e.g.
 
 ```java
+
 // bcalc2 is a reference variable(not object)
 BasicCalc bcalc2;
 bcalc2 = new ScientificCalc(); 
+
 ```
 
 LHS is expecting an object of type BasicCalc. But the object supplied in RHS is of type ScientificCalc. This is also valid because it extends BasicCalc and hence there is an "is a" relation, i.e. ScientificCalc is a BasicCalc.
@@ -272,36 +293,52 @@ LHS is expecting an object of type BasicCalc. But the object supplied in RHS is 
 But there is a limitation, because bcalc2 is of type BasicCalc we can only refer to the members of BasicCalc. As compiler only knows type information but not the object, object on which operation is being performed is only known at the runtime. 
 
 ```java
+
 int x = bcalc2.add(10, 20); // valid.
 int y = bcalc2.sub(10, 20); // valid
 double z = bcalc2.sin(90);  // Invalid.  
+
 ```
 
 To resolve this we need to do an explicit type cast inorder to make a call. 
 
 ```java
-double z = ((ScientificCalc)bcalc2).sin(90); // valid but dangerous.
+
+double z = ((ScientificCalc)bcalc2).sin(90); 
+                // valid but dangerous.
+
 ```
 
 Here you are instructing the compiler to consider bcalc2 as ScientificCalc and then make a call.
 
 General Example - Let us take some general example to help you understand this easily, if I say 
 
+```java
+
 Animal a = ........;
 
+```
+
 Here the expectation is that RHS will be an Animal. And through 'a' we can only refer to the properties of Animal. Can I say ?
+```java
 
 a.bark();
 
+```
+
 NO.  And this is the state of the compiler, compiler doesn't know what the object is? compiler only knows the type information and not the object information, hence it declares this as INVALID. If I say
 
+```java 
+
 ((Dog)a).bark();
+
+```
 
 Is this valid ? 
 
 May be !! because 'a' might point to any Animal, and it may be Dog as well, here you are instructing the compiler that "consider the a as Dog" and validate, then it say YES, it is VALID. As you suspected, if it is not a Dog then this type cast will result in ClassCastException hence you should be careful with this. 
 
-## Overriding and Dynamic Binding - 
+## Overriding - 
 
 Overriding is the process of redefining an existing method of the base class in the subclass. This is done in order to modify an existing definition with effect from the sub class. This is how we modify the existing behavior inherited from the base class.
 
@@ -313,11 +350,11 @@ In the following example class Base has two methods f() and g() and Derived exte
 
 class Base {
     public void f() {
-	System.out.println("f() in Base");
+	    System.out.println("f() in Base");
     }
     
     public void g() {
-	System.out.println("g() in Base");
+	    System.out.println("g() in Base");
     }
 }
 
@@ -327,11 +364,11 @@ class Derived extends Base {
 	
     // overrides the definition g()
     public void g() {
-	System.out.println("g() in Derived");
+	    System.out.println("g() in Derived");
     }
 	
     public void h() {
-	System.out.println("h() in Derived");
+	    System.out.println("h() in Derived");
     }
 }
  
@@ -339,23 +376,23 @@ public class Main {
 
     public static void main(String[] args) {
 		
-	Base b1 = new Base();
-	b1.f(); // in Base
-	b1.g(); // in Base
-		
-	System.out.println();
-		
-	Derived d1 = new Derived();
-	d1.f(); // in Base
-	d1.g(); // in Derived
-	d1.h(); // in Derived
-		
-	// Here b2 is a reference variable of type Base
-	// Object is of type Derived (RHS).
+        Base b1 = new Base();
+        b1.f(); // in Base
+        b1.g(); // in Base
+            
+        System.out.println();
+            
+        Derived d1 = new Derived();
+        d1.f(); // in Base
+        d1.g(); // in Derived
+        d1.h(); // in Derived
+            
+        // Here b2 is a reference variable of type Base
+        // Object is of type Derived (RHS).
 
-	Base b2 = new Derived();
-	b2.f(); // in Base
-	b2.g(); // in Derived because Object is of type Derived.
+        Base b2 = new Derived();
+        b2.f(); // in Base
+        b2.g(); // in Derived because Object is of type Derived.
     }
 }
 
@@ -370,8 +407,10 @@ General Example -
 Consider the statements, 
 
 ```java
+
 Dog g = .....;
 g.bark();
+
 ```
 
 Is g.bark() a valid call over the Dog ? YES
@@ -379,7 +418,6 @@ Is g.bark() a valid call over the Dog ? YES
 Which Dog is barking ? depends on Object(the actual Dog instance pointed by g). 
 
 This process is called dynamic binding i.e. the actual behavior is determined at runtime i.e. when the object is known. 
-
 
 ## Abstract classes - 
 
@@ -401,13 +439,13 @@ abstract class Graphic {
     protected int x2, y2;
 	
     public void setStart(int x, int y) {
-	x1 = x;
-	y1 = y;
+	    x1 = x;
+	    y1 = y;
     }
 	
     public void setEnd(int x, int y) {
-	x2 = x;
-	y2 = y;
+	    x2 = x;
+	    y2 = y;
     }
 	
     // abstract method i.e. only declaration, no definition
@@ -433,26 +471,26 @@ class Rectangle extends Graphic {
     }
 }
 
-public class Main {
+public class AbstractEx1 {
 	
     // This method is applicable for all Graphics
     
     static void drawUtil(int x1, int y1, int x2, int y2, Graphic g) {
         g.setStart(x1, y1);
-	g.setEnd(x2, y2);
-	g.draw();
+	    g.setEnd(x2, y2);
+	    g.draw();
     }
 
     public static void main(String[] args) {
 		
-	// INVALID: You can not instantiate Graphic as it is abstract.
-	// drawUtil(10, 10, 20, 20, new Graphic());
+        // INVALID: You can not instantiate Graphic as it is abstract.
+        // drawUtil(10, 10, 20, 20, new Graphic());
 
-	// VALID
-	drawUtil(30, 30, 40, 40, new Line());
+        // VALID
+        drawUtil(30, 30, 40, 40, new Line());
 
-	// VALID
-	drawUtil(50, 50, 60, 60, new Rectangle());
+        // VALID
+        drawUtil(50, 50, 60, 60, new Rectangle());
     }
 }
 
@@ -484,25 +522,25 @@ Example -
 class Sample {
 	
     public void print(int a) {
-	System.out.println("int value - " + a);
+	    System.out.println("int value - " + a);
     }
 	
     public void print(double a) {
-	System.out.println("double value - " + a);
+	    System.out.println("double value - " + a);
     }
 
     public void print(String a) {
-	System.out.println("String value - " + a);
+	    System.out.println("String value - " + a);
     }
 }
 
 class Main {
     
     public static void main(String[] args) {
-	Sample s = new Sample();
-	s.print(10);
-	s.print(10.2);
-	s.print("abc");
+        Sample s = new Sample();
+        s.print(10);
+        s.print(10.2);
+        s.print("abc");
     }
 }
 
@@ -518,15 +556,15 @@ Example -
 
 class Base {
     public static void f() {
-	System.out.println("f() in Base");
+	    System.out.println("f() in Base");
     }
 
     public final void g() {
-	System.out.println("g() in Base");
+	    System.out.println("g() in Base");
     }
 
     public void h() {
-	System.out.println("h() in Base");
+	    System.out.println("h() in Base");
     }
 }
 
@@ -534,7 +572,7 @@ class Derived extends Base {
 	
     @Override
     public void h() {
-	System.out.println("h() in Derived");
+	    System.out.println("h() in Derived");
     }
 }
 
@@ -542,16 +580,16 @@ class Main {
 
     public static void main(String[] args) {
 		
-	// Since f() is static
-	Base.f(); // f() in Base (1)
+        // Since f() is static
+        Base.f(); // f() in Base (1)
 
-	Base b1 = new Base();
-	b1.g(); // g() in Base (2)
-	b1.h(); // h() in Base (3)
+        Base b1 = new Base();
+        b1.g(); // g() in Base (2)
+        b1.h(); // h() in Base (3)
 
-	Base b2 = new Derived();
-	b2.g(); // g() in Base
-	b2.h(); // h() in Derived
+        Base b2 = new Derived();
+        b2.g(); // g() in Base
+        b2.h(); // h() in Derived
     }
 }
 ```
@@ -568,4 +606,19 @@ In both the cases compiler an directly bind the call with the exact function. He
 
 When it comes to h() it is neither static not final. And hence the actual definition could not be determined unless we know the object. Hence Dynamic Binding is used here
 
-i.e. the binding in other words linking to the actual definition is delayed till runtime until the object is actually known. In this case if the object is a Base object then the definition in Based is invoked. If the object is a Derived object then the definition in Derived is invoked.
+i.e. the binding in other words linking to the actual definition is delayed till runtime until the object is actually known. In this case if the object is a Base object then the definition in Based is invoked. If the object is a Derived object then the definition in Derived is invoked.       
+
+```java 
+
+        // Since f() is static
+        Base.f(); // f() in Base (1)
+
+        Base b1 = new Base();
+        b1.g(); // g() in Base (2)
+        b1.h(); // h() in Base (3)
+
+        Base b2 = new Derived();
+        b2.g(); // g() in Base
+        b2.h(); // h() in Derived
+
+```        
