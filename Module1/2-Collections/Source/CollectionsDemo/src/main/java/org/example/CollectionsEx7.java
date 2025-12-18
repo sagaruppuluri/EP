@@ -1,43 +1,8 @@
+package org.example;
 
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- * Collections - Prebuilt Data structure implementations.
- *
- * I - Interface
- * C - Class
- *
- *    Collection - (I)
- *       List - (I)
- *         ArrayList - (C)
- *         LinkedList - (C)
- *       Set - (I)
- *         HashSet - (C)
- *         LinkedHashSet (C)
- *         SortedSet - (I)
- *            TreeSet - (C)
- *    Map - (I)
- *      HashMap - (C)
- *      LinkedHashMap - (C)
- *      SortedMap - (I)
- *          TreeMap - (C)
- *
- *    Map -
- *      Key, Value pairs.
- *      (k1, v1)
- *      (k2, v2)
- *      put(key, value)
- *      value = get(key)
- *
- * Shortcuts -
- *
- *  List - Allows duplicates
- *  Set - No duplicates
- *  Hash - Uses hashing ( insertion order not preserved)
- *  Linked - Insertion order preserved.
- *  Tree - Sorted
- */
 // Display the word along with its frequency.
 public class CollectionsEx7 {
     public static void main(String[] args) {

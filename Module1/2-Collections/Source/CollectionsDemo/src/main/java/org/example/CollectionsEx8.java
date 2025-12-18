@@ -1,5 +1,7 @@
+package org.example;
+
+import java.util.HashSet;
 import java.util.Objects;
-import java.util.TreeSet;
 
 /**
  * Custom classes with Collections -
@@ -8,23 +10,22 @@ import java.util.TreeSet;
  *      - If working with tree structures we need to implement Comparable interface
  *        or we need to provide Comparator.
  */
-public class CollectionsEx9 {
+public class CollectionsEx8 {
     public static void main(String[] args) {
-        TreeSet<SomeFruit> set = new TreeSet<>();
+        HashSet<Fruit> set = new HashSet<>();
 
-        set.add(new SomeFruit("apple"));
-        set.add(new SomeFruit("mango"));
-        set.add(new SomeFruit("apple")); // should not be added
-        set.add(new SomeFruit("APPLE"));
+        set.add(new Fruit("apple"));
+        set.add(new Fruit("mango"));
+        set.add(new Fruit("apple")); // should not be added
 
         System.out.println( set );
     }
 }
 
-class SomeFruit implements Comparable<SomeFruit> {
+class Fruit {
     private String name;
 
-    public SomeFruit(String name) {
+    public Fruit(String name) {
         this.name = name;
     }
 
@@ -32,23 +33,30 @@ class SomeFruit implements Comparable<SomeFruit> {
         return this.name;
     }
 
-    // f1.equals(f2)
+//    @Override
+//    public boolean equals(Object o) {
+//        if (! (o instanceof  Fruit) || o == null)
+//            return false;
+//
+//        return this.name.equals( ((Fruit)o).name);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(name);
+//    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SomeFruit fruit = (SomeFruit) o;
+        Fruit fruit = (Fruit) o;
         return Objects.equals(name, fruit.name);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(name);
-    }
-
-    // f1.compareTo(f2)
-    @Override
-    public int compareTo(SomeFruit o) {
-        return this.name.compareToIgnoreCase(o.name);
     }
 }
