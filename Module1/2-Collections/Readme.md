@@ -5,8 +5,20 @@ Java Collections Framework provides resizable data structures for storing and ma
 ## Collection Interface
 
 Collection is the root interface for most collection classes, defining basic operations like add, remove, size, and iteration. It serves as the foundation for List and Set. 
-​
-```
+
+Some of the mainly used methods in Collection interface are:
+
+- `boolean add(E e)`: Adds an element to the collection.
+- `boolean remove(Object o)`: Removes a single instance of the specified element from the collection, if present.
+- `int size()`: Returns the number of elements in the collection.
+- `boolean isEmpty()`: Checks if the collection is empty.
+- `boolean contains(Object o)`: Checks if the collection contains the specified element.
+- `Iterator<E> iterator()`: Returns an iterator over the elements in the collection.
+
+```plaintext
+
+Java Collections Hierarchy:
+
 Iterable (root)
 └── Collection (root interface)
     ├── List
@@ -37,8 +49,17 @@ Map (separate hierarchy)
 ## List Interface
 
 List maintains insertion order and allows duplicate elements with indexed access. ArrayList and LinkedList implement are some wellknown classes which implement the List interface. 
+
+Some of the mainly used methods in List interface are:
+
+- `void add(int index, E element)`: Inserts the specified element at the specified position in the list.
+- `E get(int index)`: Returns the element at the specified position in the list.
+- `E remove(int index)`: Removes the element at the specified position in the list.
+- `int indexOf(Object o)`: Returns the index of the first occurrence of the specified element in the list, or -1 if not found.
+- `List<E> subList(int fromIndex, int toIndex)`: Returns a view of the portion of the list between the specified indices.
 ​
 ### ArrayList (Class)
+
 ArrayList uses dynamic arrays for fast random access but slower insertions/deletions in the middle. It grows automatically as elements are added.
 ​
 ```java
@@ -60,8 +81,19 @@ public class ArrayListExample {
 ### LinkedList (Class)
 
 LinkedList uses doubly-linked nodes for efficient insertions/deletions anywhere but slower random access. It also implements Queue and Deque interfaces.
+
+Some of the mainly used methods in LinkedList class are:
+
+- `void addFirst(E e)`: Inserts the specified element at the beginning of the list.
+- `void addLast(E e)`: Appends the specified element to the end of the list.
+- `E getFirst()`: Returns the first element in the list.
+- `E getLast()`: Returns the last element in the list.
+- `E removeFirst()`: Removes and returns the first element from the list.
+- `E removeLast()`: Removes and returns the last element from the list.
+
 ​
 ```java
+
 import java.util.LinkedList;
 
 public class LinkedListExample {
@@ -73,16 +105,27 @@ public class LinkedListExample {
         System.out.println(animals); // [Lion, Dog, Cat]
     }
 }
+
 ```
 
 ## Set Interface
 
 Set stores unique elements without duplicates. HashSet, LinkedHashSet, and TreeSet provide different ordering guarantees.
+
+Some of the mainly used methods in Set interface are:
+
+- `boolean add(E e)`: Adds the specified element to the set if it is not already present.
+- `boolean remove(Object o)`: Removes the specified element from the set if it is present.
+- `boolean contains(Object o)`: Checks if the set contains the specified element.
+- `int size()`: Returns the number of elements in the set.
+- `void clear()`: Removes all elements from the set.
 ​
 ### HashSet (Class)
+
 HashSet stores elements in hash table with no guaranteed order and constant-time performance for basic operations. Duplicates are automatically prevented.
 ​
 ```java
+
 import java.util.HashSet;
 
 public class HashSetExample {
@@ -95,6 +138,43 @@ public class HashSetExample {
         System.out.println(cars); // [Volvo, BMW, Ford] (order not guaranteed)
     }
 }
+```
+
+While using hashed collections, it's important to ensure that the objects stored in them properly override the `hashCode()` and `equals()` methods. This ensures that the uniqueness constraint of the Set is maintained correctly.
+
+```java
+    import java.util.HashSet;
+
+    class Fruit {
+        private String name;
+
+        public Fruit(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public int hashCode() {
+            return name.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            Fruit fruit = (Fruit) obj;
+            return name.equals(fruit.name);
+        }
+    }
+
+    class Main {
+        public static void main(String[] args) {
+            HashSet<Fruit> fruitSet = new HashSet<>();
+            fruitSet.add(new Fruit("Apple"));
+            fruitSet.add(new Fruit("Banana"));
+            fruitSet.add(new Fruit("Apple")); // Duplicate based on name
+            System.out.println(fruitSet.size()); // Output: 2
+        }
+    }
 ```
 
 ### LinkedHashSet (Class)
@@ -140,6 +220,84 @@ public class TreeSetExample {
         System.out.println(cars); // [BMW, Ford, Volvo]
     }
 }
+
+```
+
+Custom objects stored in a TreeSet must implement the Comparable interface or be provided with a Comparator to define their natural ordering.
+
+```java
+    import java.util.TreeSet;
+
+    class Person implements Comparable<Person> {
+        private String name;
+        private int age;
+
+        public Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        @Override
+        public int compareTo(Person other) {
+            return Integer.compare(this.age, other.age); // Sort by age
+        }
+
+        @Override
+        public String toString() {
+            return name + " (" + age + ")";
+        }
+    }
+
+    class Main {
+        public static void main(String[] args) {
+            TreeSet<Person> people = new TreeSet<>();
+            people.add(new Person("A", 30));
+            people.add(new Person("B", 25));
+            people.add(new Person("C", 35));
+            System.out.println(people); // Output: [B (25), A (30), C (35)]
+        }
+    }
+```
+
+The same applies when using a Comparator:
+
+```java
+    import java.util.Comparator;
+    import java.util.TreeSet;
+
+    class Person {
+        private String name;
+        private int age;
+
+        public Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        @Override
+        public String toString() {
+            return name + " (" + age + ")";
+        }
+    }
+
+    class AgeComparator implements Comparator<Person> {
+
+        @Override
+        public int compare(Person p1, Person p2) {
+            return Integer.compare(p1.age, p2.age); // Sort by age
+        }
+
+    }
+
+    class Main {
+        public static void main(String[] args) {
+            TreeSet<Person> people = new TreeSet<>(new AgeComparator());
+            people.add(new Person("A", 30));
+            people.add(new Person("B", 25));
+            people.add(new Person("C", 35));
+            System.out.println(people); // Output: [B (25), A (30), C (35)]
+        }
+    }
 
 ```
 
@@ -211,31 +369,69 @@ public class TreeMapExample {
 
 ```
 
+## Iterator Interface
+
+Iterator provides a way to traverse collections sequentially without exposing the underlying structure. It supports safe element removal during iteration.
+
+Some of the mainly used methods in Iterator interface are:
+
+- `boolean hasNext()`: Returns true if there are more elements to iterate over.
+- `E next()`: Returns the next element in the iteration.
+- `void remove()`: Removes the last element returned by the iterator from the underlying collection.
+
+Example of using Iterator:
+
+```java
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class IteratorExample {
+    public static void main(String[] args) {
+        ArrayList<String> colors = new ArrayList<>();
+        colors.add("Red");
+        colors.add("Green");
+        colors.add("Blue");
+
+        Iterator<String> iterator = colors.iterator();
+        while (iterator.hasNext()) {
+            String color = iterator.next();
+            System.out.println(color);
+            if (color.equals("Green")) {
+                iterator.remove(); // Safely remove "Green"
+            }
+        }
+
+        System.out.println("After removal: " + colors); // [Red, Blue]
+    }
+}
+
+For each loop can also be used as a simpler alternative to Iterator:
+
+```java
+
+import java.util.ArrayList;
+
+public class ForEachExample {
+    public static void main(String[] args) {
+        ArrayList<String> colors = new ArrayList<>();
+        colors.add("Red");
+        colors.add("Green");
+        colors.add("Blue");
+
+        for (String color : colors) {
+            System.out.println(color);
+        }
+    }
+}
 
 ```
-Iterable (I)
-    Collection - (I)
-        List - (I)
-            ArrayList - (C)
-            LinkedList - (C)
-        Set - (I)
-            HashSet - (C)
-            LinkedHashSet (C)
-            SortedSet - (I)
-            TreeSet - (C)
 
-Map - (I)
-    HashMap - (C)
-    LinkedHashMap - (C)
-    SortedMap - (I)
-        TreeMap - (C)
- 
-Shortcuts -
- 
-   List - Allows duplicates
-   Set - No duplicates
-   Hash - Uses hashing ( insertion order not preserved)
-   Linked - Insertion order preserved.
-   Tree - Sorted
- 
- ```
+
+## Shortcuts -
+
+* List - Allows duplicates
+* Set - No duplicates
+* Hash - Uses hashing ( insertion order not preserved)
+* Linked - Insertion order preserved.
+* Tree - Sorted
