@@ -1448,7 +1448,7 @@ Both approaches achieve the same result, but implementing the `Runnable` interfa
 A thread can be in one of the following states:
 
 illustrated in the diagram below:
-<img src="ThreadStates.webp" alt="Thread State Diagram" width="500"/>
+<img src="4-ThreadingAndConcurrency/ThreadStates.webp" alt="Thread State Diagram" width="500"/>
 
 * NEW: A thread that is created but not yet started is in this state.
 * RUNNABLE: A thread executing in the Java virtual machine is in this state, internally we can think of it as a combination of two sub states Ready and Running, i.e. when you start the thread it comes to Ready state and wait for the CPU, and if CPU is allocated then it goes into Running state. Once allocated CPU time is completed, in other words when the Thread schedular suspends the thread then it goes back to the Ready state and waits for its turn again. 
