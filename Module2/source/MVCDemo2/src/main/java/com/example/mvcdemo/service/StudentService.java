@@ -56,6 +56,28 @@ public class StudentService {
     }
 
     /**
+     * Update existing student
+     */
+    public Student updateStudent(Student updatedStudent) {
+        Student existingStudent = getStudentById(updatedStudent.getId());
+        if (existingStudent != null) {
+            existingStudent.setName(updatedStudent.getName());
+            existingStudent.setEmail(updatedStudent.getEmail());
+            existingStudent.setAge(updatedStudent.getAge());
+            existingStudent.setCourse(updatedStudent.getCourse());
+            return existingStudent;
+        }
+        return null;
+    }
+
+    /**
+     * Delete student by ID
+     */
+    public boolean deleteStudent(Long id) {
+        return students.removeIf(student -> student.getId().equals(id));
+    }
+
+    /**
      * Get total number of students
      */
     public int getStudentCount() {

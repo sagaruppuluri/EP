@@ -76,6 +76,30 @@
             color: #666;
             font-style: italic;
         }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 3s alternate-reverse; /* Fade in and then fade out after 3 seconds */
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                visibility: hidden;
+            }
+            100% {
+                opacity: 1;
+                visibility: visible;
+            }
+        } 
+
     </style>
 </head>
 <body>
@@ -107,6 +131,7 @@
                             <th>Email</th>
                             <th>Age</th>
                             <th>Course</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,12 +143,20 @@
                                 <td>${student.email}</td>
                                 <td>${student.age}</td>
                                 <td>${student.course}</td>
+                                <td>
+                                    <a href="/students/edit/${student.id}">Edit</a> |
+                                    <a href="/students/delete/${student.id}" onclick="return confirm('Are you sure you want to delete this student?');">Delete</a>
+                                </td>
                             </tr>
                         </c:forEach>
                     </tbody>
                 </table>
             </c:otherwise>
         </c:choose>
+
+        <c:if test="${not empty message}">
+            <div class="message">${message}</div>
+        </c:if>
     </div>
 </body>
 </html>

@@ -5,6 +5,7 @@ import com.example.mvcdemo.service.StudentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -68,7 +69,52 @@ public class StudentController {
         // Add success message
         model.addAttribute("message", "Student added successfully!");
 
+        // Since it is a redirect the model attributes will not be available in the redirected page. 
+
         // Redirect to student list
         return "redirect:/students";
+    }
+
+    /**
+     * Show edit student form
+     * URL: GET /students/edit/{id}
+     */
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
+        // Get student by ID from service
+        Student student = studentService.getStudentById(id);
+        model.addAttribute("student", student);
+        model.addAttribute("pageTitle", "Edit Student");
+ 
+        return "edit-student";
+    }
+
+    /**
+     * Process edit student form
+     * URL: POST /students/update
+     */
+    @PostMapping("/update")
+    public String updateStudent(@ModelAttribute("student") Student student,
+                                Model model) {
+        // Update student through service
+        studentService.updateStudent(student);  
+        model.addAttribute("message", "Student updated successfully!");
+
+        // return "redirect:/students"; // uses the http redirect instead of forward.
+        return listStudents(model);
+    }
+
+    /**
+     * Delete student
+     * URL: GET /students/delete/{id}
+     */    
+    @GetMapping("/delete/{id}")
+    public String deleteStudent(@PathVariable("id") Long id, Model model) {
+        // Delete student through service
+        studentService.deleteStudent(id);
+        model.addAttribute("message", "Student deleted successfully!");
+ 
+        // return "redirect:/students"; // uses the http redirect instead of forward.
+        return listStudents(model);
     }
 }
