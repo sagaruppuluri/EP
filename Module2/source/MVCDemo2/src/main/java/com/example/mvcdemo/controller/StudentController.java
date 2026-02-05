@@ -70,6 +70,9 @@ public class StudentController {
         model.addAttribute("message", "Student added successfully!");
 
         // Since it is a redirect the model attributes will not be available in the redirected page. 
+        // To pass the message to the redirected page, we can use RedirectAttributes.
+        // redirectAttributes.addFlashAttribute("message", "Student added successfully!"); 
+        // To keep things simple, we will just call the listStudents method to show the updated list with the message.
 
         // Redirect to student list
         return "redirect:/students";
