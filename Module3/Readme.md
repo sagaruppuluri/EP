@@ -1435,8 +1435,6 @@ security:
   - bearerAuth: []
 ```
 
----
-
 ### Component Breakdown
 
 #### 1. Schemas (Data Models)

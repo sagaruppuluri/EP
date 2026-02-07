@@ -37,6 +37,6 @@ openapi-generator-cli generate \
 ```bash
 
 # Redoc
-npx @redocly/cli build-docs studentApi.yaml -o redoc-generated/index.html
+npx @redocly/cli build-docs studentApi.yaml -o redoc-generated/studentApi.html
 
 ```
