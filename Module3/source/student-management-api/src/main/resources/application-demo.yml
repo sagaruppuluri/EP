@@ -1,0 +1,12 @@
+# Demo Profile Configuration
+# Activate with: java -jar app.jar --spring.profiles.active=demo
+
+spring:
+  application:
+    name: student-management-api-demo
+
+logging:
+  level:
+    com.university.studentapi: DEBUG
+    
+# This profile loads sample data on startup
