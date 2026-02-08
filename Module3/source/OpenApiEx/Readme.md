@@ -14,7 +14,12 @@ Refer for openapi generator installation : https://openapi-generator.tech/docs/i
 openapi-generator-cli generate \
   -i studentApi.yaml \
   -g spring \
-  -o ./server
+  -o ./server/student-api-server
+
+ openapi-generator-cli generate \
+  -i userApi.yaml \
+  -g spring \
+  -o ./server/user-api-server 
 ```
 
 ## Client SDKs

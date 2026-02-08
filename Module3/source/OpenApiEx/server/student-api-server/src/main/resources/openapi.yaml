@@ -1,0 +1,1316 @@
+openapi: 3.0.4
+info:
+  contact:
+    email: support@university.edu
+    name: API Support Team
+    url: https://university.edu/support
+  description: |
+    Comprehensive REST API for managing student records in an educational institution.
+
+    Features:
+    - Complete CRUD operations
+    - Advanced search and filtering
+    - Pagination support
+    - Input validation
+    - Error handling
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Student Management API
+  version: 1.0.0
+servers:
+- description: Production server
+  url: https://api.university.edu/v1
+- description: Staging server
+  url: https://api-staging.university.edu/v1
+- description: Development server
+  url: http://localhost:8080/v1
+security:
+- bearerAuth: []
+tags:
+- description: Student management operations
+  name: Students
+- description: API health check endpoints
+  name: Health
+paths:
+  /health:
+    get:
+      description: Check if the API is running
+      operationId: healthCheck
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/healthCheck_200_response"
+          description: API is healthy
+      summary: Health check endpoint
+      tags:
+      - Health
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Health
+  /students:
+    get:
+      description: |
+        Retrieve a paginated list of all students with optional filtering.
+
+        Query parameters allow you to:
+        - Paginate through results
+        - Filter by name (partial match)
+        - Filter by minimum CGPA
+        - Filter by city
+        - Sort results
+      operationId: getAllStudents
+      parameters:
+      - description: Page number (0-based)
+        example: 0
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+        style: form
+      - description: Number of items per page
+        example: 20
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          default: 20
+          format: int32
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
+      - description: "Filter by student name (partial match, case-insensitive)"
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          example: John
+          type: string
+        style: form
+      - description: Filter by minimum CGPA
+        explode: true
+        in: query
+        name: minCgpa
+        required: false
+        schema:
+          example: 7.5
+          format: double
+          maximum: 10.0
+          minimum: 0.0
+          type: number
+        style: form
+      - description: Filter by city
+        explode: true
+        in: query
+        name: city
+        required: false
+        schema:
+          example: Mumbai
+          type: string
+        style: form
+      - description: Field to sort by
+        explode: true
+        in: query
+        name: sortBy
+        required: false
+        schema:
+          default: studentNumber
+          enum:
+          - studentNumber
+          - name
+          - cgpa
+          - createdDate
+          type: string
+        style: form
+      - description: Sort order
+        explode: true
+        in: query
+        name: sortOrder
+        required: false
+        schema:
+          default: asc
+          enum:
+          - asc
+          - desc
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                successExample:
+                  summary: Example response with two students
+                  value:
+                    content:
+                    - studentNumber: STU001
+                      name: John Doe
+                      address:
+                        street: 123 Main Street
+                        city: Mumbai
+                        state: Maharashtra
+                        country: India
+                      cgpa: 8.5
+                      backlogs: 0
+                    - studentNumber: STU002
+                      name: Jane Smith
+                      address:
+                        street: 456 Park Avenue
+                        city: Delhi
+                        state: Delhi
+                        country: India
+                      cgpa: 9.2
+                      backlogs: 1
+                    page:
+                      number: 0
+                      size: 20
+                      totalElements: 2
+                      totalPages: 1
+              schema:
+                $ref: "#/components/schemas/StudentPageResponse"
+          description: Successful response with paginated student list
+        "400":
+          content:
+            application/json:
+              examples:
+                validationError:
+                  summary: Validation error example
+                  value:
+                    timestamp: 2024-02-06T10:30:00Z
+                    status: 400
+                    error: Bad Request
+                    message: Validation failed
+                    path: /v1/students
+                    errors:
+                    - field: cgpa
+                      message: must be between 0.0 and 10.0
+                      rejectedValue: "12.5"
+                    - field: studentNumber
+                      message: "must match pattern ^STU[0-9]{3,6}$"
+                      rejectedValue: INVALID
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request - Invalid input
+        "500":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 500
+                error: Internal Server Error
+                message: An unexpected error occurred
+                path: /v1/students
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal server error
+      security:
+      - bearerAuth: []
+      summary: Get all students
+      tags:
+      - Students
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Students
+    post:
+      description: |
+        Create a new student record in the system.
+
+        Required fields:
+        - studentNumber (unique)
+        - name
+        - address (complete)
+        - cgpa
+        - backlogs
+      operationId: createStudent
+      requestBody:
+        content:
+          application/json:
+            examples:
+              validStudent:
+                summary: Valid student creation request
+                value:
+                  studentNumber: STU003
+                  name: Alice Johnson
+                  address:
+                    street: 789 Oak Street
+                    city: Bangalore
+                    state: Karnataka
+                    country: India
+                  cgpa: 7.8
+                  backlogs: 2
+            schema:
+              $ref: "#/components/schemas/StudentCreateRequest"
+        description: Student object to be created
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              example:
+                studentNumber: STU003
+                name: Alice Johnson
+                address:
+                  street: 789 Oak Street
+                  city: Bangalore
+                  state: Karnataka
+                  country: India
+                cgpa: 7.8
+                backlogs: 2
+                createdDate: 2024-02-06T10:30:00Z
+                lastModifiedDate: 2024-02-06T10:30:00Z
+              schema:
+                $ref: "#/components/schemas/Student"
+          description: Student created successfully
+          headers:
+            Location:
+              description: URI of the created student
+              explode: false
+              schema:
+                example: /v1/students/STU003
+                type: string
+              style: simple
+        "400":
+          content:
+            application/json:
+              examples:
+                validationError:
+                  summary: Validation error example
+                  value:
+                    timestamp: 2024-02-06T10:30:00Z
+                    status: 400
+                    error: Bad Request
+                    message: Validation failed
+                    path: /v1/students
+                    errors:
+                    - field: cgpa
+                      message: must be between 0.0 and 10.0
+                      rejectedValue: "12.5"
+                    - field: studentNumber
+                      message: "must match pattern ^STU[0-9]{3,6}$"
+                      rejectedValue: INVALID
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request - Invalid input
+        "409":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 409
+                error: Conflict
+                message: Student with student number STU003 already exists
+                path: /v1/students
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Student with the same student number already exists
+        "500":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 500
+                error: Internal Server Error
+                message: An unexpected error occurred
+                path: /v1/students
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal server error
+      security:
+      - bearerAuth: []
+      summary: Create a new student
+      tags:
+      - Students
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Students
+  /students/{studentNumber}:
+    delete:
+      description: |
+        Permanently delete a student record from the system.
+
+        **Warning**: This operation cannot be undone.
+      operationId: deleteStudent
+      parameters:
+      - description: Unique student identifier
+        example: STU001
+        explode: false
+        in: path
+        name: studentNumber
+        required: true
+        schema:
+          pattern: "^STU[0-9]{3,6}$"
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Student deleted successfully
+        "404":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 404
+                error: Not Found
+                message: Student not found with student number STU999
+                path: /v1/students/STU999
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 500
+                error: Internal Server Error
+                message: An unexpected error occurred
+                path: /v1/students
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal server error
+      security:
+      - bearerAuth: []
+      summary: Delete student by student number
+      tags:
+      - Students
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Students
+    get:
+      description: Retrieve a single student record by their unique student number
+      operationId: getStudentByNumber
+      parameters:
+      - description: Unique student identifier
+        example: STU001
+        explode: false
+        in: path
+        name: studentNumber
+        required: true
+        schema:
+          pattern: "^STU[0-9]{3,6}$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                studentNumber: STU001
+                name: John Doe
+                address:
+                  street: 123 Main Street
+                  city: Mumbai
+                  state: Maharashtra
+                  country: India
+                cgpa: 8.5
+                backlogs: 0
+                createdDate: 2024-01-15T09:00:00Z
+                lastModifiedDate: 2024-02-01T14:30:00Z
+              schema:
+                $ref: "#/components/schemas/Student"
+          description: Student found
+        "404":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 404
+                error: Not Found
+                message: Student not found with student number STU999
+                path: /v1/students/STU999
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 500
+                error: Internal Server Error
+                message: An unexpected error occurred
+                path: /v1/students
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal server error
+      security:
+      - bearerAuth: []
+      summary: Get student by student number
+      tags:
+      - Students
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Students
+    patch:
+      description: |
+        Update specific fields of a student record.
+
+        Only the fields provided in the request body will be updated.
+        Other fields will remain unchanged.
+      operationId: partialUpdateStudent
+      parameters:
+      - description: Unique student identifier
+        example: STU001
+        explode: false
+        in: path
+        name: studentNumber
+        required: true
+        schema:
+          pattern: "^STU[0-9]{3,6}$"
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            examples:
+              updateCgpa:
+                summary: Update only CGPA and backlogs
+                value:
+                  cgpa: 9.0
+                  backlogs: 0
+            schema:
+              $ref: "#/components/schemas/StudentPartialUpdateRequest"
+        description: Fields to update
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+          description: Student updated successfully
+        "400":
+          content:
+            application/json:
+              examples:
+                validationError:
+                  summary: Validation error example
+                  value:
+                    timestamp: 2024-02-06T10:30:00Z
+                    status: 400
+                    error: Bad Request
+                    message: Validation failed
+                    path: /v1/students
+                    errors:
+                    - field: cgpa
+                      message: must be between 0.0 and 10.0
+                      rejectedValue: "12.5"
+                    - field: studentNumber
+                      message: "must match pattern ^STU[0-9]{3,6}$"
+                      rejectedValue: INVALID
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request - Invalid input
+        "404":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 404
+                error: Not Found
+                message: Student not found with student number STU999
+                path: /v1/students/STU999
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 500
+                error: Internal Server Error
+                message: An unexpected error occurred
+                path: /v1/students
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal server error
+      security:
+      - bearerAuth: []
+      summary: Partially update student
+      tags:
+      - Students
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Students
+    put:
+      description: |
+        Update an existing student record.
+
+        All fields in the request body will replace existing values.
+        Student number cannot be changed.
+      operationId: updateStudent
+      parameters:
+      - description: Unique student identifier
+        example: STU001
+        explode: false
+        in: path
+        name: studentNumber
+        required: true
+        schema:
+          pattern: "^STU[0-9]{3,6}$"
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            examples:
+              updateExample:
+                summary: Update student information
+                value:
+                  name: John Michael Doe
+                  address:
+                    street: "123 Main Street, Apt 4B"
+                    city: Mumbai
+                    state: Maharashtra
+                    country: India
+                  cgpa: 8.7
+                  backlogs: 0
+            schema:
+              $ref: "#/components/schemas/StudentUpdateRequest"
+        description: Updated student object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                studentNumber: STU001
+                name: John Michael Doe
+                address:
+                  street: "123 Main Street, Apt 4B"
+                  city: Mumbai
+                  state: Maharashtra
+                  country: India
+                cgpa: 8.7
+                backlogs: 0
+                createdDate: 2024-01-15T09:00:00Z
+                lastModifiedDate: 2024-02-06T10:45:00Z
+              schema:
+                $ref: "#/components/schemas/Student"
+          description: Student updated successfully
+        "400":
+          content:
+            application/json:
+              examples:
+                validationError:
+                  summary: Validation error example
+                  value:
+                    timestamp: 2024-02-06T10:30:00Z
+                    status: 400
+                    error: Bad Request
+                    message: Validation failed
+                    path: /v1/students
+                    errors:
+                    - field: cgpa
+                      message: must be between 0.0 and 10.0
+                      rejectedValue: "12.5"
+                    - field: studentNumber
+                      message: "must match pattern ^STU[0-9]{3,6}$"
+                      rejectedValue: INVALID
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request - Invalid input
+        "404":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 404
+                error: Not Found
+                message: Student not found with student number STU999
+                path: /v1/students/STU999
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 500
+                error: Internal Server Error
+                message: An unexpected error occurred
+                path: /v1/students
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal server error
+      security:
+      - bearerAuth: []
+      summary: Update student by student number
+      tags:
+      - Students
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Students
+  /students/search:
+    post:
+      description: |
+        Perform advanced search with multiple criteria.
+
+        Supports complex queries with multiple filters combined.
+      operationId: searchStudents
+      requestBody:
+        content:
+          application/json:
+            examples:
+              searchExample:
+                summary: Search for high-performing students in Mumbai
+                value:
+                  name: John
+                  city: Mumbai
+                  minCgpa: 8.0
+                  maxBacklogs: 1
+            schema:
+              $ref: "#/components/schemas/StudentSearchRequest"
+        description: Search criteria
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Student"
+                type: array
+          description: Search results
+        "400":
+          content:
+            application/json:
+              examples:
+                validationError:
+                  summary: Validation error example
+                  value:
+                    timestamp: 2024-02-06T10:30:00Z
+                    status: 400
+                    error: Bad Request
+                    message: Validation failed
+                    path: /v1/students
+                    errors:
+                    - field: cgpa
+                      message: must be between 0.0 and 10.0
+                      rejectedValue: "12.5"
+                    - field: studentNumber
+                      message: "must match pattern ^STU[0-9]{3,6}$"
+                      rejectedValue: INVALID
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Bad request - Invalid input
+        "500":
+          content:
+            application/json:
+              example:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 500
+                error: Internal Server Error
+                message: An unexpected error occurred
+                path: /v1/students
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Internal server error
+      security:
+      - bearerAuth: []
+      summary: Advanced student search
+      tags:
+      - Students
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Students
+  /students/statistics:
+    get:
+      description: Retrieve statistical information about all students
+      operationId: getStudentStatistics
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                totalStudents: 150
+                averageCgpa: 7.85
+                studentsWithNoBacklogs: 120
+                studentsWithBacklogs: 30
+                topPerformers: 15
+                cityDistribution:
+                  Mumbai: 45
+                  Delhi: 35
+                  Bangalore: 40
+                  Chennai: 30
+              schema:
+                $ref: "#/components/schemas/StudentStatistics"
+          description: Statistics retrieved successfully
+      security:
+      - bearerAuth: []
+      summary: Get student statistics
+      tags:
+      - Students
+      x-accepts:
+      - application/json
+      x-tags:
+      - tag: Students
+components:
+  parameters:
+    StudentNumberParam:
+      description: Unique student identifier
+      example: STU001
+      explode: false
+      in: path
+      name: studentNumber
+      required: true
+      schema:
+        pattern: "^STU[0-9]{3,6}$"
+        type: string
+      style: simple
+    PageParam:
+      description: Page number (0-based)
+      example: 0
+      explode: true
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 0
+        format: int32
+        minimum: 0
+        type: integer
+      style: form
+    SizeParam:
+      description: Number of items per page
+      example: 20
+      explode: true
+      in: query
+      name: size
+      required: false
+      schema:
+        default: 20
+        format: int32
+        maximum: 100
+        minimum: 1
+        type: integer
+      style: form
+  responses:
+    BadRequest:
+      content:
+        application/json:
+          examples:
+            validationError:
+              summary: Validation error example
+              value:
+                timestamp: 2024-02-06T10:30:00Z
+                status: 400
+                error: Bad Request
+                message: Validation failed
+                path: /v1/students
+                errors:
+                - field: cgpa
+                  message: must be between 0.0 and 10.0
+                  rejectedValue: "12.5"
+                - field: studentNumber
+                  message: "must match pattern ^STU[0-9]{3,6}$"
+                  rejectedValue: INVALID
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Bad request - Invalid input
+    NotFound:
+      content:
+        application/json:
+          example:
+            timestamp: 2024-02-06T10:30:00Z
+            status: 404
+            error: Not Found
+            message: Student not found with student number STU999
+            path: /v1/students/STU999
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Resource not found
+    InternalServerError:
+      content:
+        application/json:
+          example:
+            timestamp: 2024-02-06T10:30:00Z
+            status: 500
+            error: Internal Server Error
+            message: An unexpected error occurred
+            path: /v1/students
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Internal server error
+  schemas:
+    Student:
+      description: Complete student record with all fields
+      example:
+        address:
+          country: India
+          city: Mumbai
+          street: 123 Main Street
+          state: Maharashtra
+        backlogs: 0
+        createdDate: 2024-01-15T09:00:00Z
+        lastModifiedDate: 2024-02-06T10:30:00Z
+        studentNumber: STU001
+        name: John Doe
+        cgpa: 8.5
+      properties:
+        studentNumber:
+          description: Unique student identifier
+          example: STU001
+          pattern: "^STU[0-9]{3,6}$"
+          type: string
+        name:
+          description: Full name of the student
+          example: John Doe
+          maxLength: 100
+          minLength: 2
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        cgpa:
+          description: Cumulative Grade Point Average
+          example: 8.5
+          format: double
+          maximum: 10.0
+          minimum: 0.0
+          type: number
+        backlogs:
+          description: Number of backlog subjects
+          example: 0
+          format: int32
+          minimum: 0
+          type: integer
+        createdDate:
+          description: Date and time when the student record was created
+          example: 2024-01-15T09:00:00Z
+          format: date-time
+          readOnly: true
+          type: string
+        lastModifiedDate:
+          description: Date and time when the student record was last updated
+          example: 2024-02-06T10:30:00Z
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - address
+      - backlogs
+      - cgpa
+      - name
+      - studentNumber
+      type: object
+    Address:
+      description: Student's residential address
+      example:
+        country: India
+        city: Mumbai
+        street: 123 Main Street
+        state: Maharashtra
+      properties:
+        street:
+          description: Street address
+          example: 123 Main Street
+          maxLength: 200
+          minLength: 3
+          type: string
+        city:
+          description: City name
+          example: Mumbai
+          maxLength: 100
+          minLength: 2
+          type: string
+        state:
+          description: State or province
+          example: Maharashtra
+          maxLength: 100
+          minLength: 2
+          type: string
+        country:
+          description: Country name
+          example: India
+          maxLength: 100
+          minLength: 2
+          type: string
+      required:
+      - city
+      - country
+      - state
+      - street
+      type: object
+    StudentCreateRequest:
+      description: Request body for creating a new student
+      example:
+        address:
+          country: India
+          city: Mumbai
+          street: 123 Main Street
+          state: Maharashtra
+        backlogs: 0
+        studentNumber: STU001
+        name: John Doe
+        cgpa: 8.5
+      properties:
+        studentNumber:
+          description: Unique student identifier
+          example: STU001
+          pattern: "^STU[0-9]{3,6}$"
+          type: string
+        name:
+          description: Full name of the student
+          example: John Doe
+          maxLength: 100
+          minLength: 2
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        cgpa:
+          description: Cumulative Grade Point Average
+          example: 8.5
+          format: double
+          maximum: 10.0
+          minimum: 0.0
+          type: number
+        backlogs:
+          description: Number of backlog subjects
+          example: 0
+          format: int32
+          minimum: 0
+          type: integer
+      required:
+      - address
+      - backlogs
+      - cgpa
+      - name
+      - studentNumber
+      type: object
+    StudentUpdateRequest:
+      description: Request body for updating a student (all fields required)
+      example:
+        address:
+          country: India
+          city: Mumbai
+          street: 123 Main Street
+          state: Maharashtra
+        backlogs: 0
+        name: John Doe
+        cgpa: 8.5
+      properties:
+        name:
+          description: Full name of the student
+          example: John Doe
+          maxLength: 100
+          minLength: 2
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        cgpa:
+          description: Cumulative Grade Point Average
+          example: 8.5
+          format: double
+          maximum: 10.0
+          minimum: 0.0
+          type: number
+        backlogs:
+          description: Number of backlog subjects
+          example: 0
+          format: int32
+          minimum: 0
+          type: integer
+      required:
+      - address
+      - backlogs
+      - cgpa
+      - name
+      type: object
+    StudentPartialUpdateRequest:
+      description: Request body for partial update (all fields optional)
+      example:
+        address:
+          country: India
+          city: Mumbai
+          street: 123 Main Street
+          state: Maharashtra
+        backlogs: 0
+        name: name
+        cgpa: 0.8008281904610115
+      properties:
+        name:
+          maxLength: 100
+          minLength: 2
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        cgpa:
+          format: double
+          maximum: 10.0
+          minimum: 0.0
+          type: number
+        backlogs:
+          format: int32
+          minimum: 0
+          type: integer
+      type: object
+    StudentSearchRequest:
+      description: Advanced search criteria
+      example:
+        country: country
+        maxCgpa: 6.027456183070403
+        maxBacklogs: 0
+        city: city
+        minCgpa: 0.8008281904610115
+        name: name
+        state: state
+      properties:
+        name:
+          description: Search by name (partial match)
+          type: string
+        city:
+          description: Filter by city
+          type: string
+        state:
+          description: Filter by state
+          type: string
+        country:
+          description: Filter by country
+          type: string
+        minCgpa:
+          description: Minimum CGPA
+          format: double
+          maximum: 10.0
+          minimum: 0.0
+          type: number
+        maxCgpa:
+          description: Maximum CGPA
+          format: double
+          maximum: 10.0
+          minimum: 0.0
+          type: number
+        maxBacklogs:
+          description: Maximum number of backlogs
+          format: int32
+          minimum: 0
+          type: integer
+      type: object
+    StudentPageResponse:
+      description: Paginated list of students
+      example:
+        page:
+          number: 0
+          size: 20
+          totalPages: 8
+          totalElements: 150
+        content:
+        - address:
+            country: India
+            city: Mumbai
+            street: 123 Main Street
+            state: Maharashtra
+          backlogs: 0
+          createdDate: 2024-01-15T09:00:00Z
+          lastModifiedDate: 2024-02-06T10:30:00Z
+          studentNumber: STU001
+          name: John Doe
+          cgpa: 8.5
+        - address:
+            country: India
+            city: Mumbai
+            street: 123 Main Street
+            state: Maharashtra
+          backlogs: 0
+          createdDate: 2024-01-15T09:00:00Z
+          lastModifiedDate: 2024-02-06T10:30:00Z
+          studentNumber: STU001
+          name: John Doe
+          cgpa: 8.5
+      properties:
+        content:
+          description: Array of student records
+          items:
+            $ref: "#/components/schemas/Student"
+          type: array
+        page:
+          $ref: "#/components/schemas/PageInfo"
+      type: object
+    PageInfo:
+      description: Pagination information
+      example:
+        number: 0
+        size: 20
+        totalPages: 8
+        totalElements: 150
+      properties:
+        number:
+          description: Current page number (0-based)
+          example: 0
+          format: int32
+          type: integer
+        size:
+          description: Number of items per page
+          example: 20
+          format: int32
+          type: integer
+        totalElements:
+          description: Total number of items
+          example: 150
+          format: int64
+          type: integer
+        totalPages:
+          description: Total number of pages
+          example: 8
+          format: int32
+          type: integer
+      type: object
+    StudentStatistics:
+      description: Statistical information about students
+      example:
+        averageCgpa: 7.85
+        topPerformers: 15
+        cityDistribution:
+          Mumbai: 45
+          Delhi: 35
+        studentsWithNoBacklogs: 120
+        totalStudents: 150
+        studentsWithBacklogs: 30
+      properties:
+        totalStudents:
+          example: 150
+          format: int64
+          type: integer
+        averageCgpa:
+          example: 7.85
+          format: double
+          type: number
+        studentsWithNoBacklogs:
+          example: 120
+          format: int64
+          type: integer
+        studentsWithBacklogs:
+          example: 30
+          format: int64
+          type: integer
+        topPerformers:
+          description: Students with CGPA >= 9.0
+          example: 15
+          format: int64
+          type: integer
+        cityDistribution:
+          additionalProperties:
+            type: integer
+          description: Number of students per city
+          example:
+            Mumbai: 45
+            Delhi: 35
+          type: object
+      type: object
+    Error:
+      description: Standard error response
+      example:
+        path: /v1/students
+        error: Bad Request
+        message: Validation failed for field 'cgpa'
+        errors:
+        - field: cgpa
+          message: must be between 0.0 and 10.0
+          rejectedValue: "12.5"
+        - field: cgpa
+          message: must be between 0.0 and 10.0
+          rejectedValue: "12.5"
+        timestamp: 2024-02-06T10:30:00Z
+        status: 400
+      properties:
+        timestamp:
+          description: Error occurrence timestamp
+          example: 2024-02-06T10:30:00Z
+          format: date-time
+          type: string
+        status:
+          description: HTTP status code
+          example: 400
+          format: int32
+          type: integer
+        error:
+          description: Error type
+          example: Bad Request
+          type: string
+        message:
+          description: Detailed error message
+          example: Validation failed for field 'cgpa'
+          type: string
+        path:
+          description: Request path that caused the error
+          example: /v1/students
+          type: string
+        errors:
+          description: List of validation errors (if applicable)
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+      required:
+      - error
+      - message
+      - path
+      - status
+      - timestamp
+      type: object
+    ValidationError:
+      description: Individual validation error
+      example:
+        field: cgpa
+        message: must be between 0.0 and 10.0
+        rejectedValue: "12.5"
+      properties:
+        field:
+          description: Field that failed validation
+          example: cgpa
+          type: string
+        message:
+          description: Validation error message
+          example: must be between 0.0 and 10.0
+          type: string
+        rejectedValue:
+          description: Value that was rejected
+          example: "12.5"
+          type: string
+      type: object
+    healthCheck_200_response:
+      example:
+        status: UP
+        timestamp: 2024-02-06T10:30:00Z
+      properties:
+        status:
+          example: UP
+          type: string
+        timestamp:
+          example: 2024-02-06T10:30:00Z
+          format: date-time
+          type: string
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: |
+        JWT-based authentication. Include the token in the Authorization header:
+
+        ```
+        Authorization: Bearer <your_jwt_token>
+        ```
+      scheme: bearer
+      type: http

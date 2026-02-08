@@ -1,0 +1,39 @@
+openapi: 3.0.4
+info:
+  description: A sample API to demonstrate OpenAPI specification
+  title: Sample API
+  version: 1.0.0
+servers:
+- url: https://api.example.com/v1
+security:
+- bearerAuth: []
+paths:
+  /users:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/User"
+                type: array
+          description: A list of users
+      summary: Get a list of users
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    User:
+      example:
+        name: name
+        id: 0
+        email: email
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+      type: object

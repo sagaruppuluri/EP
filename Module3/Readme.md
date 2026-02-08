@@ -376,7 +376,7 @@ HTTP/1.1 500 Internal Server Error
 
 ### What is OpenAPI?
 
-OpenAPI Specification (OAS) is a standard, language-agnostic interface description for HTTP APIs. It allows both humans and computers to understand the capabilities of a REST API without accessing source code or documentation.
+OpenAPI Specification (OAS) is a standard, language-agnostic interface description for HTTP APIs. It allows developers to define the structure of their APIs in a machine-readable format (YAML or JSON). This specification can be used to generate interactive documentation, client SDKs, server stubs, and perform automated testing. OpenAPI promotes consistency and standardization in API design, making it easier for developers to understand and consume APIs.
 
 ### Key Benefits
 
