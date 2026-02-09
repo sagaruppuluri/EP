@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller to Demonstrate REST API to HTTP mappings.
+ */
 @RestController
 @RequestMapping("/api/books")
 public class BookController {

@@ -386,14 +386,16 @@ REST (Representational State Transfer) is an architectural style for building we
 
 ### REST vs Traditional Web Services
 
-```
+```java
 Traditional:
+
 POST /getUserById
 POST /createUser
 POST /updateUser
 POST /deleteUser
 
 RESTful:
+
 GET    /users/{id}     - Get user
 POST   /users          - Create user
 PUT    /users/{id}     - Update user
@@ -424,7 +426,7 @@ OpenAPI Specification (OAS) is a standard, language-agnostic interface descripti
 
 #### High-Level Architecture
 
-```
+```java
 ┌────────────────────────────────────────────────────┐
 │              OpenAPI 3.0.4 Document                │
 ├────────────────────────────────────────────────────┤
@@ -2208,6 +2210,7 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.NOT_FOUND)
             .body(error);
     }
+}
 ```
 
 ### Data Validation
@@ -2296,7 +2299,6 @@ public class ValidationExceptionHandler {
 @Negative       // Negative number
 ```
 
----
 
 ### Best Practices
 
