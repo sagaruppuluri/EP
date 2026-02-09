@@ -371,6 +371,34 @@ HTTP/1.1 500 Internal Server Error
 | 502  | Bad Gateway             | Server Error  | Invalid upstream response            |
 | 503  | Service Unavailable     | Server Error  | Server temporarily unavailable       |
 
+## REST APIs Quick Overview
+
+### What is REST?
+
+REST (Representational State Transfer) is an architectural style for building web services that use HTTP methods to perform operations on resources.
+
+**Key Principles:**
+- **Resources**: Everything is a resource (User, Product, Order)
+- **URIs**: Each resource has a unique identifier (URL)
+- **HTTP Methods**: Use standard methods (GET, POST, PUT, DELETE)
+- **Stateless**: Each request contains all necessary information
+- **JSON/XML**: Data exchange format
+
+### REST vs Traditional Web Services
+
+```
+Traditional:
+POST /getUserById
+POST /createUser
+POST /updateUser
+POST /deleteUser
+
+RESTful:
+GET    /users/{id}     - Get user
+POST   /users          - Create user
+PUT    /users/{id}     - Update user
+DELETE /users/{id}     - Delete user
+```
 
 ## OpenAPI
 
@@ -1823,8 +1851,605 @@ examples:
       cgpa: 12.5              # Invalid - exceeds maximum
 ```
 
-## APIs using  Spring  Boot 
+## REST API using Spring  Boot 3 
 
+### What is @RestController?
 
-## Exception handling strategies for APIs, Versioning and security best practices for APIs  
+`@RestController` is a specialized version of the `@Controller` annotation used to create RESTful web services in Spring Boot.
+
+```java
+@RestController = @Controller + @ResponseBody
+```
+
+**Key Characteristics:**
+- Automatically converts return values to JSON/XML
+- Eliminates need for `@ResponseBody` on every method
+- Designed for REST API development
+- Returns data instead of views
+
+### Basic Usage
+
+#### Simple RestController
+
+```java
+@RestController
+@RequestMapping("/api")
+public class HelloController {
+    
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, World!";
+    }
+}
+```
+
+**Access:** `GET http://localhost:8080/api/hello`
+
+### Key Annotations
+
+#### 1. @RequestMapping
+
+Maps HTTP requests to handler methods.
+
+```java
+@RestController
+@RequestMapping("/api/users")  // Base path for all methods
+public class UserController {
+    
+    @RequestMapping("/all")  // /api/users/all
+    public List<User> getAllUsers() {
+        return userList;
+    }
+}
+```
+
+#### 2. HTTP Method Annotations
+
+```java
+@RestController
+@RequestMapping("/api/products")
+public class ProductController {
+    
+    @GetMapping          // GET - Read
+    @PostMapping         // POST - Create
+    @PutMapping          // PUT - Update
+    @PatchMapping        // PATCH - Partial Update
+    @DeleteMapping       // DELETE - Delete
+}
+```
+
+#### 3. @PathVariable
+
+Extract values from URI path.
+
+```java
+// GET /api/users/123
+@GetMapping("/users/{id}")
+public User getUser(@PathVariable Long id) {
+    return findUserById(id);
+}
+
+// GET /api/users/123/orders/456
+@GetMapping("/users/{userId}/orders/{orderId}")
+public Order getOrder(
+    @PathVariable Long userId,
+    @PathVariable Long orderId) {
+    return findOrder(userId, orderId);
+}
+```
+
+#### 4. @RequestParam
+
+Extract query parameters.
+
+```java
+// GET /api/search?keyword=java&page=1
+@GetMapping("/search")
+public List<Item> search(
+    @RequestParam String keyword,
+    @RequestParam(defaultValue = "0") int page) {
+    return searchItems(keyword, page);
+}
+
+// Optional parameter
+@GetMapping("/filter")
+public List<Item> filter(
+    @RequestParam(required = false) String category) {
+    return filterItems(category);
+}
+```
+
+#### 5. @RequestBody
+
+Bind request body to object (for POST/PUT).
+
+```java
+@PostMapping("/users")
+public User createUser(@RequestBody User user) {
+    return saveUser(user);
+}
+
+// Request JSON:
+{
+    "name": "John Doe",
+    "email": "john@example.com"
+}
+```
+
+#### 6. @RequestHeader
+
+Access HTTP headers.
+
+```java
+@GetMapping("/info")
+public String getInfo(
+    @RequestHeader("User-Agent") String userAgent) {
+    return "Browser: " + userAgent;
+}
+```
+
+---
+
+### Complete Example
+
+```java
+@RestController
+@RequestMapping("/api/books")
+public class BookController {
+    
+    private List<Book> books = new ArrayList<>();
+    private Long nextId = 1L;
+    
+    // GET all books
+    @GetMapping
+    public List<Book> getAllBooks() {
+        return books;
+    }
+    
+    // GET book by ID
+    @GetMapping("/{id}")
+    public Book getBook(@PathVariable Long id) {
+        return books.stream()
+            .filter(b -> b.getId().equals(id))
+            .findFirst()
+            .orElse(null);
+    }
+    
+    // POST - Create book
+    @PostMapping
+    public Book createBook(@RequestBody Book book) {
+        book.setId(nextId++);
+        books.add(book);
+        return book;
+    }
+    
+    // PUT - Update book
+    @PutMapping("/{id}")
+    public Book updateBook(
+        @PathVariable Long id,
+        @RequestBody Book updatedBook) {
+        
+        for (int i = 0; i < books.size(); i++) {
+            if (books.get(i).getId().equals(id)) {
+                updatedBook.setId(id);
+                books.set(i, updatedBook);
+                return updatedBook;
+            }
+        }
+        return null;
+    }
+    
+    // DELETE book
+    @DeleteMapping("/{id}")
+    public String deleteBook(@PathVariable Long id) {
+        books.removeIf(b -> b.getId().equals(id));
+        return "Book deleted";
+    }
+    
+    // Search with query parameter
+    @GetMapping("/search")
+    public List<Book> search(@RequestParam String title) {
+        return books.stream()
+            .filter(b -> b.getTitle().contains(title))
+            .toList();
+    }
+}
+
+// Book Model
+class Book {
+    private Long id;
+    private String title;
+    private String author;
+    
+    // Constructors, Getters, Setters
+}
+```
+
+### Response Handling
+
+#### 1. Return Simple Types
+
+```java
+@GetMapping("/message")
+public String getMessage() {
+    return "Hello";  // Returns: "Hello"
+}
+```
+
+#### 2. Return Objects (Auto-converted to JSON)
+
+```java
+@GetMapping("/user")
+public User getUser() {
+    return new User("John", "john@example.com");
+}
+
+// Response:
+{
+    "name": "John",
+    "email": "john@example.com"
+}
+```
+
+#### 3. Return Collections
+
+```java
+@GetMapping("/users")
+public List<User> getUsers() {
+    return List.of(
+        new User("John", "john@example.com"),
+        new User("Jane", "jane@example.com")
+    );
+}
+
+// Response: [ {...}, {...} ]
+```
+
+#### 4. ResponseEntity for Status Control
+
+```java
+@GetMapping("/user/{id}")
+public ResponseEntity<User> getUser(@PathVariable Long id) {
+    User user = findUser(id);
+    
+    if (user != null) {
+        return ResponseEntity.ok(user);  // 200 OK
+    } else {
+        return ResponseEntity.notFound().build();  // 404 Not Found
+    }
+}
+
+@PostMapping("/users")
+public ResponseEntity<User> createUser(@RequestBody User user) {
+    User created = saveUser(user);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)  // 201 Created
+        .body(created);
+}
+```
+
+### HTTP Status Codes
+
+```java
+@RestController
+public class StatusController {
+    
+    @GetMapping("/ok")
+    public String ok() {
+        return "Success";  // 200 OK (default)
+    }
+    
+    @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)  // 201
+    public String create() {
+        return "Created";
+    }
+    
+    @DeleteMapping("/delete")
+    @ResponseStatus(HttpStatus.NO_CONTENT)  // 204
+    public void delete() {
+        // No content returned
+    }
+}
+```
+
+**Common Status Codes:**
+- `200 OK` - Success (default)
+- `201 Created` - Resource created
+- `204 No Content` - Success, no response body
+- `400 Bad Request` - Invalid request
+- `404 Not Found` - Resource not found
+- `500 Internal Server Error` - Server error
+
+### Exception Handling
+
+#### Method-Level Exception Handler
+
+```java
+@RestController
+public class ProductController {
+    
+    @GetMapping("/products/{id}")
+    public Product getProduct(@PathVariable Long id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("Invalid ID");
+        }
+        return findProduct(id);
+    }
+    
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleBadRequest(
+        IllegalArgumentException ex) {
+        
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ex.getMessage());
+    }
+}
+```
+
+#### Global Exception Handler
+
+```java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(
+        ResourceNotFoundException ex) {
+        
+        ErrorResponse error = new ErrorResponse(
+            404,
+            ex.getMessage(),
+            System.currentTimeMillis()
+        );
+        
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(error);
+    }
+```
+
+### Data Validation
+
+#### Add Validation Annotations
+
+```java
+import jakarta.validation.constraints.*;
+
+public class User {
+    
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 50)
+    private String name;
+    
+    @Email(message = "Invalid email")
+    @NotBlank
+    private String email;
+    
+    @Min(18)
+    @Max(100)
+    private int age;
+    
+    // Getters, Setters
+}
+```
+
+#### Use @Valid in Controller
+
+```java
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    
+    @PostMapping
+    public ResponseEntity<User> createUser(
+        @Valid @RequestBody User user) {
+        
+        // If validation fails, returns 400 Bad Request
+        User created = saveUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(created);
+    }
+}
+```
+
+#### Handle Validation Errors
+
+```java
+@RestControllerAdvice
+public class ValidationExceptionHandler {
+    
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidation(
+        MethodArgumentNotValidException ex) {
+        
+        Map<String, String> errors = new HashMap<>();
+        
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String field = ((FieldError) error).getField();
+            String message = error.getDefaultMessage();
+            errors.put(field, message);
+        });
+        
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(errors);
+    }
+}
+```
+
+### Common Validation Annotations
+
+```java
+@NotNull        // Cannot be null
+@NotEmpty       // Cannot be null or empty (String, Collection)
+@NotBlank       // Cannot be null, empty, or whitespace (String only)
+@Size(min, max) // Size constraints (String, Collection, Array)
+@Min(value)     // Minimum numeric value
+@Max(value)     // Maximum numeric value
+@Email          // Valid email format
+@Pattern(regexp)// Matches regex pattern
+@Past           // Date in the past
+@Future         // Date in the future
+@Positive       // Positive number
+@Negative       // Negative number
+```
+
+---
+
+### Best Practices
+
+#### 1. Use Proper HTTP Methods
+
+```java
+// GOOD
+@GetMapping("/users")           // Read
+@PostMapping("/users")          // Create
+@PutMapping("/users/{id}")      // Update
+@DeleteMapping("/users/{id}")   // Delete
+
+// BAD
+@PostMapping("/getUsers")
+@PostMapping("/createUser")
+```
+
+#### 2. Use Meaningful URIs
+
+```java
+// GOOD - Resource-based
+/api/customers
+/api/customers/{id}
+/api/customers/{id}/orders
+
+// BAD - Action-based
+/api/getCustomers
+/api/createCustomer
+```
+
+#### 3. Return Appropriate Status Codes
+
+```java
+@PostMapping("/users")
+public ResponseEntity<User> create(@RequestBody User user) {
+    return ResponseEntity
+        .status(HttpStatus.CREATED)  // 201 instead of 200
+        .body(user);
+}
+
+@DeleteMapping("/users/{id}")
+public ResponseEntity<Void> delete(@PathVariable Long id) {
+    deleteUser(id);
+    return ResponseEntity.noContent().build();  // 204
+}
+```
+
+#### 4. Use Constructor Injection
+
+```java
+// GOOD
+@RestController
+public class UserController {
+    private final UserService userService;
+    
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+}
+
+// AVOID
+@RestController
+public class UserController {
+    @Autowired
+    private UserService userService;  // Field injection
+}
+```
+
+#### 5. Version Your API
+
+```java
+@RestController
+@RequestMapping("/api/v1/products")  // Version in URL
+public class ProductController {
+    // ...
+}
+```
+
+### Quick Reference
+
+#### Annotation Summary
+
+| Annotation        | Purpose                      |
+|------------------ |----------------------------- |
+| `@RestController` | Defines REST controller      |
+| `@RequestMapping` | Maps requests to handler     |
+| `@GetMapping`     | Maps GET requests            |
+| `@PostMapping`    | Maps POST requests           |
+| `@PutMapping`     | Maps PUT requests            |
+| `@DeleteMapping`  | Maps DELETE requests         |
+| `@PathVariable`   | Extracts URI variable        |
+| `@RequestParam`   | Extracts query parameter     |
+| `@RequestBody`    | Binds request body to object |
+| `@RequestHeader`  | Extracts HTTP header         |
+| `@Valid`          | Enables validation           |
+| `@ResponseStatus` | Sets HTTP status code        |
+
+#### Common Patterns
+
+```java
+// Basic CRUD endpoints
+GET    /api/resources           // List all
+GET    /api/resources/{id}      // Get one
+POST   /api/resources           // Create
+PUT    /api/resources/{id}      // Update
+DELETE /api/resources/{id}      // Delete
+
+// Nested resources
+GET    /api/users/{id}/orders
+POST   /api/users/{id}/orders
+
+// Search/Filter
+GET    /api/products?category=books&sort=price
+```
+
+### Testing with cURL
+
+```bash
+# GET request
+curl http://localhost:8080/api/books
+
+# GET with path variable
+curl http://localhost:8080/api/books/1
+
+# POST request
+curl -X POST http://localhost:8080/api/books \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Spring Boot","author":"John Doe"}'
+
+# PUT request
+curl -X PUT http://localhost:8080/api/books/1 \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Updated Title","author":"Jane Doe"}'
+
+# DELETE request
+curl -X DELETE http://localhost:8080/api/books/1
+```
+
+### Summary
+
+**@RestController** simplifies REST API development by:
+- Automatically converting responses to JSON
+- Providing specialized annotations for HTTP methods
+- Integrating with Spring's dependency injection
+- Supporting validation and exception handling
+- Following RESTful principles
+
+**Key Points:**
+- Use `@RestController` for REST APIs
+- Use `@Controller` for traditional MVC (returning views)
+- Leverage HTTP method annotations (`@GetMapping`, `@PostMapping`, etc.)
+- Return `ResponseEntity` for fine-grained control
+- Implement proper exception handling
+- Validate input with `@Valid`
+- Follow REST best practices
 
