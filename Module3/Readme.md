@@ -375,7 +375,7 @@ HTTP/1.1 500 Internal Server Error
 
 ### What is REST?
 
-REST (Representational State Transfer) is an architectural style for building web services that use HTTP methods to perform operations on resources.
+REST (Representational State Transfer) is an architectural style for building web services that use HTTP methods to perform operations on resources. RESTful APIs are designed to be stateless, scalable, and easy to maintain. They use standard HTTP methods (GET, POST, PUT, DELETE) to perform CRUD operations on resources identified by URIs. REST emphasizes a uniform interface and resource-based interactions, making it a popular choice for web API development.
 
 **Key Principles:**
 - **Resources**: Everything is a resource (User, Product, Order)
@@ -385,6 +385,8 @@ REST (Representational State Transfer) is an architectural style for building we
 - **JSON/XML**: Data exchange format
 
 ### REST vs Traditional Web Services
+
+Traditional web services often use RPC-style endpoints that are action-based and may not follow RESTful principles. In contrast, RESTful APIs focus on resources and use standard HTTP methods to perform operations on those resources. This leads to more intuitive and scalable APIs. Using RESTful design allows for better separation of concerns, easier maintenance, and improved scalability compared to traditional web services. HTTP methods are used to indicate the desired action on a resource, and URIs are designed to represent resources rather than actions, making RESTful APIs more intuitive and easier to use. Common mappings of HTTP methods to CRUD operations in RESTful APIs are as follows:
 
 ```java
 Traditional:
@@ -536,7 +538,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
 ```
 #### Student CRUD API - Complete Example
 
@@ -1858,6 +1859,8 @@ examples:
 ### What is @RestController?
 
 `@RestController` is a specialized version of the `@Controller` annotation used to create RESTful web services in Spring Boot.
+RestControllers are designed to handle HTTP requests and return data (usually in JSON or XML format) rather than rendering views.
+When you annotate a class with `@RestController`, Spring automatically converts the return values of the methods into the appropriate format based on the client's request (using content negotiation). RestControllers are typically used to build APIs that serve data to clients, such as web applications, mobile apps, or other services. In spring boot `@RestController` is a convenient annotation that combines `@Controller` and `@ResponseBody`, eliminating the need to annotate each method with `@ResponseBody` to indicate that the return value should be serialized directly to the HTTP response body.
 
 ```java
 @RestController = @Controller + @ResponseBody
@@ -1885,13 +1888,15 @@ public class HelloController {
 }
 ```
 
+Above example defines a simple REST endpoint that returns a greeting message. The `@RequestMapping("/api")` sets the base path for all endpoints in this controller, and the `@GetMapping("/hello")` maps GET requests to the `hello()` method.
+
 **Access:** `GET http://localhost:8080/api/hello`
 
 ### Key Annotations
 
 #### 1. @RequestMapping
 
-Maps HTTP requests to handler methods.
+Maps HTTP requests to handler methods. Can be used at class and method level. 
 
 ```java
 @RestController
@@ -1922,7 +1927,7 @@ public class ProductController {
 
 #### 3. @PathVariable
 
-Extract values from URI path.
+Path variables for dynamic URL segments. These values are extracted from the URL and passed as method parameters. The name in `@PathVariable` should match the placeholder in the URL.
 
 ```java
 // GET /api/users/123
@@ -1942,7 +1947,7 @@ public Order getOrder(
 
 #### 4. @RequestParam
 
-Extract query parameters.
+Query parameters are passed in the URL after the `?` and are used to filter or modify the request. They are optional by default, but you can make them required. 
 
 ```java
 // GET /api/search?keyword=java&page=1
@@ -1963,7 +1968,7 @@ public List<Item> filter(
 
 #### 5. @RequestBody
 
-Bind request body to object (for POST/PUT).
+Request body is used to pass complex objects in the request payload, typically in JSON format. Spring automatically deserializes the JSON into the specified Java object. 
 
 ```java
 @PostMapping("/users")
@@ -1980,7 +1985,7 @@ public User createUser(@RequestBody User user) {
 
 #### 6. @RequestHeader
 
-Access HTTP headers.
+RequestHeader is used to access HTTP headers sent by the client. You can specify the header name and Spring will inject its value into the method parameter.
 
 ```java
 @GetMapping("/info")
@@ -2167,6 +2172,9 @@ public class StatusController {
 
 #### Method-Level Exception Handler
 
+Method level exception handlers allow you to handle exceptions specific to a controller. You can use the `@ExceptionHandler` annotation to define methods that will handle specific exceptions thrown by any method in the controller. This is useful for handling exceptions that are relevant only to that controller, allowing you to return custom error responses or status codes.
+
+
 ```java
 @RestController
 public class ProductController {
@@ -2191,6 +2199,8 @@ public class ProductController {
 ```
 
 #### Global Exception Handler
+
+Global exception handlers allow you to handle exceptions across the entire application in a centralized manner. By using the `@RestControllerAdvice` annotation, you can define a class that will intercept exceptions thrown by any controller and provide a consistent error response format. This is particularly useful for handling common exceptions like `ResourceNotFoundException`, validation errors, or any unhandled exceptions, ensuring that clients receive meaningful error messages and appropriate HTTP status codes. 
 
 ```java
 @RestControllerAdvice
@@ -2217,6 +2227,8 @@ public class GlobalExceptionHandler {
 
 #### Add Validation Annotations
 
+Validation annotations from the `jakarta.validation.constraints` package can be used to enforce constraints on request data. When combined with `@Valid`, Spring will automatically validate the incoming request body against these constraints and return a 400 Bad Request response if validation fails. Inorder to customize the error response, you can create a global exception handler that catches `MethodArgumentNotValidException` and formats the validation errors in a user-friendly way. 
+
 ```java
 import jakarta.validation.constraints.*;
 
@@ -2240,6 +2252,8 @@ public class User {
 
 #### Use @Valid in Controller
 
+@Valid triggers the validation process for the request body. If any validation constraints are violated, Spring will throw a `MethodArgumentNotValidException`, which can be handled to return detailed error messages to the client. 
+
 ```java
 @RestController
 @RequestMapping("/api/users")
@@ -2258,6 +2272,8 @@ public class UserController {
 ```
 
 #### Handle Validation Errors
+
+Handle validation errors globally to provide consistent error responses. The example below captures all validation errors and returns a structured response containing the field names and corresponding error messages. MethodArgumentNotValidException is thrown when validation on an argument annotated with @Valid fails. By catching this exception in a global exception handler, you can extract the validation errors and return them in a user-friendly format, such as a JSON object containing the field names and error messages.
 
 ```java
 @RestControllerAdvice
@@ -2304,6 +2320,8 @@ public class ValidationExceptionHandler {
 
 #### 1. Use Proper HTTP Methods
 
+Use the correct HTTP method for each operation to follow RESTful principles. This makes your API more intuitive and easier to use. Don't use POST for actions that are meant to read data, and avoid using GET for operations that modify data. 
+
 ```java
 // GOOD
 @GetMapping("/users")           // Read
@@ -2318,6 +2336,8 @@ public class ValidationExceptionHandler {
 
 #### 2. Use Meaningful URIs
 
+Resource-based URIs are more intuitive and easier to understand than action-based URIs. Use nouns to represent resources and avoid verbs in the URI path. Don't include implementation details or actions in the URI. Instead, use HTTP methods to indicate the action being performed on the resource.
+
 ```java
 // GOOD - Resource-based
 /api/customers
@@ -2330,6 +2350,8 @@ public class ValidationExceptionHandler {
 ```
 
 #### 3. Return Appropriate Status Codes
+
+Returning the correct HTTP status codes helps clients understand the result of their requests and handle responses appropriately. Use 200 OK for successful GET requests, 201 Created for successful POST requests that create resources, and 204 No Content for successful DELETE requests. Avoid returning 200 OK for all responses, as it can be misleading and does not provide enough information about the outcome of the request.
 
 ```java
 @PostMapping("/users")
@@ -2347,6 +2369,8 @@ public ResponseEntity<Void> delete(@PathVariable Long id) {
 ```
 
 #### 4. Use Constructor Injection
+
+Constructor injection is generally recommended over field injection because it promotes immutability, makes dependencies explicit, and is easier to test. With constructor injection, you can easily see what dependencies a class requires by looking at its constructor. It also allows you to create immutable objects, which can help prevent bugs and improve thread safety. Field injection, on the other hand, can lead to hidden dependencies and makes it harder to write unit tests for the class.
 
 ```java
 // GOOD
@@ -2368,6 +2392,8 @@ public class UserController {
 ```
 
 #### 5. Version Your API
+
+API versioning allows you to make changes to your API without breaking existing clients. You can version your API using the URL, request header, or query parameter. URL versioning is the most common and straightforward approach, where you include the version number in the URI path. This makes it clear to clients which version of the API they are using and allows you to maintain multiple versions simultaneously. Alternatively you can use header versioning or query parameter versioning, but these approaches can be less visible to clients and may require additional documentation to ensure proper usage.
 
 ```java
 @RestController
@@ -2415,6 +2441,8 @@ GET    /api/products?category=books&sort=price
 ```
 
 ### Testing with cURL
+
+cURL is a command-line tool for making HTTP requests. You can use it to test your REST API endpoints by sending various types of requests (GET, POST, PUT, DELETE) and inspecting the responses. Below are examples of how to use cURL to interact with a REST API built with Spring Boot. 
 
 ```bash
 # GET request
