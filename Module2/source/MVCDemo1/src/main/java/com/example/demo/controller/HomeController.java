@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Handles home page requests
  */
 @Controller
-@RequestMapping("/")
 public class HomeController {
 
     /**

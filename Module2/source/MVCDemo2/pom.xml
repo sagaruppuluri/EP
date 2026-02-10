@@ -12,6 +12,7 @@
 	<artifactId>MVCDemo2</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>MVCDemo2</name>
+	<packaging>war</packaging>
 	<description>Demo project for Spring MVC</description>
 	<properties>
 		<java.version>17</java.version>
@@ -25,7 +26,7 @@
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
-			<scope>provided</scope>
+<!--			<scope>provided</scope>-->
 		</dependency>
 
 		<!-- JSTL (JSP Standard Tag Library) -->
@@ -37,11 +38,11 @@
 			<groupId>org.glassfish.web</groupId>
 			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-test</artifactId>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>
