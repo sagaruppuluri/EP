@@ -819,8 +819,11 @@ public class EnrollmentController {
  Approach                 | Pros                                                      | Cons               | Best For                       
 
  **Wrapper Object**       | Clean, type-safe, easy validation, single @ModelAttribute | Extra class needed | Complex forms, production apps 
+ 
  **Prefixed Parameters**  | Simple, no extra classes | Manual prefix management in JSP | Small to medium forms 
+ 
  **@InitBinder**          | Fine-grained control, centralized config | More code, harder to maintain | Complex binding scenarios 
+ 
  **Separate Requests**    | Complete isolation, simpler forms | Multiple HTTP requests, session management | Multi-step wizards 
 
 ### Key Takeaways
