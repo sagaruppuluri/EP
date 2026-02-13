@@ -18,47 +18,47 @@
 ┌─────────────────────────────────────────────────────────────┐
 │         @ModelAttribute Population Process                  │
 ├─────────────────────────────────────────────────────────────┤
-│                                                               │
+│                                                             │
 │  Step 1: Form Submission (JSP)                              │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │ <form:form modelAttribute="student">               │    │
-│  │   <form:input path="firstName" />                  │    │
-│  │   <form:input path="lastName" />                   │    │
-│  │   <form:input path="age" />                        │    │
-│  │ </form:form>                                       │    │
-│  └────────────────────────────────────────────────────┘    │
-│                          │                                   │
-│                          ▼                                   │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │ <form:form modelAttribute="student">               │     │
+│  │   <form:input path="firstName" />                  │     │
+│  │   <form:input path="lastName" />                   │     │
+│  │   <form:input path="age" />                        │     │
+│  │ </form:form>                                       │     │
+│  └────────────────────────────────────────────────────┘     │
+│                          │                                  │
+│                          ▼                                  │
 │  Step 2: HTTP Request Parameters                            │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │ firstName=John                                      │    │
-│  │ lastName=Doe                                        │    │
-│  │ age=25                                              │    │
-│  └────────────────────────────────────────────────────┘    │
-│                          │                                   │
-│                          ▼                                   │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │ firstName=John                                     │     │
+│  │ lastName=Doe                                       │     │
+│  │ age=25                                             │     │
+│  └────────────────────────────────────────────────────┘     │
+│                          │                                  │
+│                          ▼                                  │
 │  Step 3: ModelAttributeMethodProcessor                      │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │ • Creates Student object                            │    │
-│  │ • Uses WebDataBinder                                │    │
-│  │ • Binds request params to object properties         │    │
-│  └────────────────────────────────────────────────────┘    │
-│                          │                                   │
-│                          ▼                                   │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │ • Creates Student object                           │     │
+│  │ • Uses WebDataBinder                               │     │
+│  │ • Binds request params to object properties        │     │
+│  └────────────────────────────────────────────────────┘     │
+│                          │                                  │
+│                          ▼                                  │
 │  Step 4: Data Binding via Setters                           │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │ student.setFirstName("John")                        │    │
-│  │ student.setLastName("Doe")                          │    │
-│  │ student.setAge(25)                                  │    │
-│  └────────────────────────────────────────────────────┘    │
-│                          │                                   │
-│                          ▼                                   │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │ student.setFirstName("John")                       │     │
+│  │ student.setLastName("Doe")                         │     │
+│  │ student.setAge(25)                                 │     │
+│  └────────────────────────────────────────────────────┘     │
+│                          │                                  │
+│                          ▼                                  │
 │  Step 5: Handler Method Invocation                          │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │ public String handleForm(                           │    │
-│  │     @ModelAttribute("student") Student student)     │    │
-│  └────────────────────────────────────────────────────┘    │
-│                                                               │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │ public String handleForm(                          │     │
+│  │     @ModelAttribute("student") Student student)    │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -816,12 +816,12 @@ public class EnrollmentController {
 
 ### Comparison Table
 
-| Approach | Pros | Cons | Best For |
-|----------|------|------|----------|
-| **Wrapper Object** | Clean, type-safe, easy validation, single @ModelAttribute | Extra class needed | Complex forms, production apps |
-| **Prefixed Parameters** | Simple, no extra classes | Manual prefix management in JSP | Small to medium forms |
-| **@InitBinder** | Fine-grained control, centralized config | More code, harder to maintain | Complex binding scenarios |
-| **Separate Requests** | Complete isolation, simpler forms | Multiple HTTP requests, session management | Multi-step wizards |
+ Approach                 | Pros                                                      | Cons               | Best For                       
+
+ **Wrapper Object**       | Clean, type-safe, easy validation, single @ModelAttribute | Extra class needed | Complex forms, production apps 
+ **Prefixed Parameters**  | Simple, no extra classes | Manual prefix management in JSP | Small to medium forms 
+ **@InitBinder**          | Fine-grained control, centralized config | More code, harder to maintain | Complex binding scenarios 
+ **Separate Requests**    | Complete isolation, simpler forms | Multiple HTTP requests, session management | Multi-step wizards 
 
 ### Key Takeaways
 
@@ -834,4 +834,3 @@ public class EnrollmentController {
 ---
 
 **Version**: Spring Framework 6.x / Spring Boot 3.x  
-**Last Updated**: February 2026
