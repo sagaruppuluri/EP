@@ -1,5 +1,29 @@
 # Demo: Implementing MVC Architecture with Spring Boot and JSP
 
+## How to build and run the application
+
+This demo application is designed to showcase the spring dependency injection features and configuration.
+
+1. Open MVCDemo2 project in IntelliJ IDEA.
+    a. Open IntelliJ IDEA and select "Open" from the welcome screen or "File > Open" from the menu.
+    b. Navigate to the MVCDemo2 directory and open the `pom.xml` file as project.
+    c. If jdk is not found then setup the jdk in the project structure settings. Go to "File > Project Structure > Project" and set the Project SDK to a valid JDK installation, use jdk 17 or later. Then click "Apply" and "OK" to save the settings. IntelliJ will automatically import the project and download the necessary dependencies specified in the `pom.xml` file. You should see the project structure in the Project Explorer on the left side of the IDE.
+2. Once the project is loaded, locate the `MVCdemoApplication` class in the `src/main/java/com/example/mvcdemo` directory.
+3. Run the `MVCdemoApplication`
+4. Application should launch and listening to port 8080.
+5. Open a web browser and navigate to `http://localhost:8080/` to access the home page of the application.
+
+### Problems Running Tests
+
+In case of any issues, ensure that the project dependencies are correctly imported and the JDK is properly configured in IntelliJ IDEA.
+
+Open maven tool window (View > Tool Windows > Maven) and click on the "Reload All Maven Projects" button to refresh the dependencies. Click the run `Execute maven goal` from the `Maven tool window` use Execute maven goal and use the following command to run the application from maven directly,
+
+```
+    mvn clean compile spring-boot:run 
+```
+
+
 ## Overview
 
 We'll build a simple application to manage students with these features:
