@@ -1,52 +1,9 @@
-HELP.md
-target/
-.mvn/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-docker/vol/
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-target/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
-.vscode/
-vol/
-*.zip
-*.class
-
-### Mac ###
-.DS_Store   
-
-
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
+docker/vol/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -81,4 +38,3 @@ build/
 
 ### Mac OS ###
 .DS_Store
-
